@@ -23,6 +23,7 @@ func ConvertMsg(src []byte, l int) ([]byte, error) {
 	return desc[:bytesWritten], nil
 }
 
+// Convert request message with fixed length
 func ConvertMsgFixLen(src []byte, l int) ([]byte, error) {
 	cd, err := iconv.NewConverter(config.FromEncoding, config.ToEncoding)
 	if err != nil {
