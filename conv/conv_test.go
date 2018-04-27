@@ -2,7 +2,11 @@ package conv
 
 import (
 	"bytes"
+	"encoding/hex"
+	"os"
 	"testing"
+
+	"github.com/djimenez/iconv-go"
 )
 
 var testCase = []struct {
@@ -18,10 +22,21 @@ var testCase = []struct {
 }
 
 func TestConvertMsgFixLen(t *testing.T) {
+	cd, err := iconv.NewConverter("utf8", "gbk")
+	if err != nil {
+		t.Fatal("create converter error", err)
+	}
+	defer cd.Close()
+
+	stdoutDumper := hex.Dumper(os.Stdout)
+	defer stdoutDumper.Close()
+
 	for _, i := range testCase {
-		output, err := ConvertMsgFixLen([]byte(i.input), i.length)
+		output, err := ConvertMsgFixLen(cd, []byte(i.input), i.length)
 		if err != nil || bytes.Compare(output, []byte(i.expected)) != 0 {
 			t.Errorf("input:%v, error:%v, output:%v, expected:%v", i.input, err, output, []byte(i.expected))
+			stdoutDumper.Write([]byte(output))
 		}
 	}
+
 }

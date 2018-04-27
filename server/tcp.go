@@ -12,15 +12,31 @@ import (
 
 	"tcpserver/config"
 	"tcpserver/conv"
+
+	"github.com/djimenez/iconv-go"
+)
+
+var
+(
+	Cd         *iconv.Converter
+	errConvert error
 )
 
 func NewTcpServer(addr string) {
+	// create tcp server
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
 		log.Fatal("start tcp server errror", err)
 	}
 	defer listener.Close()
 	log.Println("tcp server starting on ", addr)
+
+	// create iconv convert
+	Cd, errConvert = iconv.NewConverter(config.FromEncoding, config.ToEncoding)
+	if errConvert != nil {
+		log.Fatal("create convert error:", errConvert, config.FromEncoding, config.ToEncoding)
+	}
+	defer Cd.Close()
 
 	for {
 		conn, err := listener.Accept()
@@ -61,7 +77,7 @@ func HandleConn(conn net.Conn) {
 	log.Printf("<<< got message bodyLen:%d, body:%v\n", bodyLen, body)
 
 	// Convert message
-	resp, err := conv.ConvertMsg(body, bodyLen)
+	resp, err := conv.ConvertMsg(Cd, body, bodyLen)
 	if err != nil {
 		log.Printf("<<< return because conv message:%v, error:%v\n", resp, err)
 		return

@@ -1,4 +1,4 @@
-package testcase
+package server
 
 import (
 	"bytes"
@@ -10,8 +10,6 @@ import (
 	"strconv"
 	"testing"
 	"time"
-
-	"tcpserver/server"
 )
 
 func TestNullMsg(*testing.T) {
