@@ -77,7 +77,7 @@ func HandleConn(conn net.Conn) {
 	log.Printf("<<< got message bodyLen:%d, body:%v\n", bodyLen, body)
 
 	// Convert message
-	resp, err := conv.ConvertMsg(Cd, body, bodyLen)
+	resp, err := conv.ConvertMsg(Cd, body)
 	if err != nil {
 		log.Printf("<<< return because conv message:%v, error:%v\n", resp, err)
 		return
